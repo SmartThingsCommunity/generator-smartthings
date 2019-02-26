@@ -1,0 +1,57 @@
+{
+  "name": "generator-smartthings-smartapp",
+  "version": "0.1.0",
+  "description": "Generates a SmartThings SmartApp",
+  "author": "SmartThings, Inc.",
+  "contributors": [
+    "Eric Rodewald <eric.rodewald@smartthings.com>"
+  ],
+  "homepage": "https://smartthings.developer.samsung.com/",
+  "files": [
+    "generators"
+  ],
+  "main": "index.js",
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "husky": "^1.2.0",
+    "jest": "^23.5.0",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.2",
+    "xo": "^0.24.0",
+    "yeoman-assert": "^3.1.0",
+    "yeoman-test": "^1.7.0"
+  },
+  "engines": {
+    "npm": ">= 4.0.0"
+  },
+  "scripts": {
+    "test": "xo && echo \"Error: no test specified\" && exit 1 && jest",
+    "pretest": "eslint ."
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chalk": "^2.1.0",
+    "generator-express": "^2.17.0",
+    "lodash": "^4.17.11",
+    "semver": "^5.6.0",
+    "yeoman-generator": "^2.0.1",
+    "yosay": "^2.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.json": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": "SmartThingsCommunity/generator-smartthings-smartapp"
+}

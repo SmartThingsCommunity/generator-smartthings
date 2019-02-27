@@ -2,6 +2,7 @@
 
 <p align="center">
 <a href="https://npmjs.org/package/generator-smartthings-smartapp"><img src="https://badge.fury.io/js/generator-smartthings-smartapp.svg"></a>
+<a href="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings-smartapp.svg?style=svg"><img src="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings-smartapp.svg?style=svg"></a>
 <a href="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp.svg?theme=shields.io"></a>
 <a href="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp/branch/master/graph/badge.svg" /></a>
 </p>

@@ -54,7 +54,6 @@ jobs:
       - *attach_workspace
       - build-helpers/authenticate_npm
       - run: npm publish
-      - build-helpers/push_package_to_npm
       - *persist_to_workspace
   github_release:
     executor: hedwig
@@ -84,14 +83,14 @@ workflows:
               branches:
                   only: /^pull\/.*$/ # only from forks
       - test:
-            context: pi
-            requires:
-                - install_dependencies
-            filters:
-                tags:
-                    ignore: /.*/ # ignore for all tags
-                branches:
-                    only: /^pull\/.*$/ # only from forks
+          context: pi
+          requires:
+              - install_dependencies
+          filters:
+              tags:
+                  ignore: /.*/ # ignore for all tags
+              branches:
+                  only: /^pull\/.*$/ # only from forks
       - publish:
             context: pi
             requires:

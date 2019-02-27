@@ -1,12 +1,11 @@
 {
   "name": "generator-smartthings-smartapp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generates a SmartThings SmartApp",
   "author": "SmartThings, Inc.",
   "contributors": [
     "Eric Rodewald <eric.rodewald@smartthings.com>"
   ],
-  "homepage": "https://smartthings.developer.samsung.com/",
   "files": [
     "generators"
   ],
@@ -53,5 +52,6 @@
     "space": 2,
     "semicolon": false
   },
+  "homepage": "https://github.com/SmartThingsCommunity/generator-smartthings-smartapp",
   "repository": "SmartThingsCommunity/generator-smartthings-smartapp"
 }

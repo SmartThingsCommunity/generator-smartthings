@@ -80,8 +80,6 @@ workflows:
           filters:
               tags:
                   only: /.*/ # ensure this job does not block publishing via tag
-              branches:
-                  only: /^pull\/.*$/ # only from forks
       - test:
           context: pi
           requires:
@@ -89,8 +87,6 @@ workflows:
           filters:
               tags:
                   ignore: /.*/ # ignore for all tags
-              branches:
-                  only: /^pull\/.*$/ # only from forks
       - publish:
             context: pi
             requires:

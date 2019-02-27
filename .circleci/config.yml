@@ -54,7 +54,6 @@ jobs:
       - *attach_workspace
       - build-helpers/authenticate_npm
       - run: npm publish
-      - build-helpers/push_package_to_npm
       - *persist_to_workspace
   github_release:
     executor: hedwig

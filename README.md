@@ -3,7 +3,7 @@
 <p align="center">
 <a href="https://npmjs.org/package/generator-smartthings-smartapp"><img src="https://badge.fury.io/js/generator-smartthings-smartapp.svg"></a>
 <a href="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp.svg?theme=shields.io"></a>
-<a href="https://coveralls.io/r/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://coveralls.io/repos/SmartThingsCommunity/generator-smartthings-smartapp/badge.svg"></a>
+<a href="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp/branch/master/graph/badge.svg" /></a>
 </p>
 
 > Generates a SmartThings SmartApp application
@@ -61,12 +61,3 @@ can read and share information.
 Licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
 
 Copyright 2019 SmartThings, Inc.
-
-[npm-image]: https://badge.fury.io/js/generator-smartthings-smartapp.svg
-[npm-url]: https://npmjs.org/package/generator-smartthings-smartapp
-<!-- [travis-image]: https://travis-ci.org//generator-smartthings-smartapp.svg?branch=master
-[travis-url]: https://travis-ci.org/erodewald/generator-smartthings-smartapp -->
-[daviddm-image]: https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp
-[coveralls-image]: https://coveralls.io/repos/SmartThingsCommunity/generator-smartthings-smartapp/badge.svg
-[coveralls-url]: https://coveralls.io/r/SmartThingsCommunity/generator-smartthings-smartapp

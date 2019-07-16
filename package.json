@@ -1,10 +1,11 @@
 {
   "name": "generator-smartthings",
   "version": "0.1.1",
-  "description": "Generates a SmartThings SmartApp",
+  "description": "Generates a SmartThings app",
   "author": "SmartThings, Inc.",
   "contributors": [
-    "Eric Rodewald <eric.rodewald@smartthings.com>"
+    "Eric Rodewald <eric.rodewald@smartthings.com>",
+    "Ross Stenersen <ross.stenersen@smartthings.com>"
   ],
   "files": [
     "generators"
@@ -53,6 +54,6 @@
     "space": 2,
     "semicolon": false
   },
-  "homepage": "https://github.com/SmartThingsCommunity/generator-smartthings-smartapp",
-  "repository": "SmartThingsCommunity/generator-smartthings-smartapp"
+  "homepage": "https://github.com/SmartThingsCommunity/generator-smartthings",
+  "repository": "SmartThingsCommunity/generator-smartthings"
 }

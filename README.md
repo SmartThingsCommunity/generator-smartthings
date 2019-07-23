@@ -1,10 +1,10 @@
-# generator-smartthings-smartapp
+# generator-smartthings
 
 <p align="center">
-<a href="https://npmjs.org/package/generator-smartthings-smartapp"><img src="https://badge.fury.io/js/generator-smartthings-smartapp.svg"></a>
-<a href="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings-smartapp.svg?style=svg"><img src="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings-smartapp.svg?style=svg"></a>
-<a href="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://david-dm.org/SmartThingsCommunity/generator-smartthings-smartapp.svg?theme=shields.io"></a>
-<a href="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp"><img src="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings-smartapp/branch/master/graph/badge.svg" /></a>
+<a href="https://npmjs.org/package/generator-smartthings"><img src="https://badge.fury.io/js/generator-smartthings.svg"></a>
+<a href="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings.svg?style=svg"><img src="https://circleci.com/gh/SmartThingsCommunity/generator-smartthings.svg?style=svg"></a>
+<a href="https://david-dm.org/SmartThingsCommunity/generator-smartthings"><img src="https://david-dm.org/SmartThingsCommunity/generator-smartthings.svg?theme=shields.io"></a>
+<a href="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings"><img src="https://codecov.io/gh/SmartThingsCommunity/generator-smartthings/branch/master/graph/badge.svg" /></a>
 </p>
 
 > Generates a SmartThings SmartApp application
@@ -16,24 +16,24 @@
 If you have NPM install (`5.2.0`+), just run the following command from a root repository directory:
 
 ```bash
-npm init yo smartthings-smartapp
+npm init yo smartthings
 ```
 
 > Take note of the name, missing the `generator-` prefix. This is intentional.
 
 ### Or, with Yeoman globally installed
 
-First, install [Yeoman](http://yeoman.io) and generator-smartthings-smartapp using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
+First, install [Yeoman](http://yeoman.io) and generator-smartthings using [npm](https://www.npmjs.com/) (we assume you have pre-installed [node.js](https://nodejs.org/)).
 
 ```bash
 npm install -g yo
-npm install -g generator-smartthings-smartapp
+npm install -g generator-smartthings
 ```
 
 Then generate your new project:
 
 ```bash
-yo smartthings-smartapp
+yo smartthings
 ```
 
 ## Getting To Know Yeoman

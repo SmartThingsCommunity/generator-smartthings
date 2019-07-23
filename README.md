@@ -49,7 +49,7 @@ If you are not familiar with SmartThings, we have
 [extensive on-line documentation](https://smartthings.developer.samsung.com/develop/index.html).
 
 To create and manage your services and devices on SmartThings, create an account in the
-[developer workspace](https://devworkspace.developer.samsung.com/).
+[Developer Workspace](https://devworkspace.developer.samsung.com/).
 
 The [SmartThings Community](https://community.smartthings.com/c/developers/) is a good place share and
 ask questions.

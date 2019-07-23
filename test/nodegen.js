@@ -5,11 +5,11 @@ const fs = require('fs')
 const assert = require('yeoman-assert')
 const helpers = require('yeoman-test')
 
-describe('generator-smartthings:app', function() {
+describe('generator-smartthings:node', function() {
   it('smartapp', done => {
     this.timeout(20000)
     helpers
-      .run(path.join(__dirname, '../generators/app'))
+      .run(path.join(__dirname, '../generators/node'))
       .withPrompts({
         type: 'app-smartapp',
         displayName: 'My Test App',

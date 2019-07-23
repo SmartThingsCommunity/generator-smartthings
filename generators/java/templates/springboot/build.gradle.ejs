@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '2.1.6.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = '<%- basePackageName %>'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.smartthings.sdk:smartapp-core:0.0.3-PREVIEW'
+    implementation 'com.smartthings.sdk:smartthings-client:0.0.3-PREVIEW'
+    implementation 'com.smartthings.sdk:smartapp-spring:0.0.3-PREVIEW'
+<% if (contextStore == 'dynamodb') { %>
+    implementation 'com.smartthings.sdk:smartapp-contextstore-dynamodb:0.0.3-PREVIEW'
+<% } %>
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+<% if (contextStore == 'dynamodb') { %>
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.568')
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb'
+<% } %>
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

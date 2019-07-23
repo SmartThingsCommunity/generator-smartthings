@@ -1,0 +1,109 @@
+package <%- basePackageName %>;
+
+<% if (contextStore == 'dynamodb') { %>
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+<% } %>
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+<% if (contextStore == 'dynamodb') { %>
+import org.springframework.beans.factory.annotation.Value;
+<% } %>
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+<% if (contextStore == 'dynamodb') { %>
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+<% } %>
+import com.smartthings.sdk.client.ApiClient;
+import com.smartthings.sdk.smartapp.core.Response;
+import com.smartthings.sdk.smartapp.core.SmartAppDefinition;
+import com.smartthings.sdk.smartapp.core.extensions.HttpVerificationService;
+import com.smartthings.sdk.smartapp.core.extensions.InstallHandler;
+import com.smartthings.sdk.smartapp.core.extensions.UninstallHandler;
+import com.smartthings.sdk.smartapp.core.extensions.UpdateHandler;
+<% if (contextStore == 'dynamodb') { %>
+import com.smartthings.sdk.smartapp.core.extensions.contextstore.DefaultInstalledAppContextStore;
+<% } %>
+import com.smartthings.sdk.smartapp.core.models.InstallResponseData;
+import com.smartthings.sdk.smartapp.core.models.UninstallResponseData;
+import com.smartthings.sdk.smartapp.core.models.UpdateResponseData;
+<% if (contextStore == 'dynamodb') { %>
+import com.smartthings.sdk.smartapp.core.service.TokenRefreshService;
+import com.smartthings.sdk.smartapp.core.service.TokenRefreshServiceImpl;
+import com.smartthings.sdk.smartapp.extensions.contextstore.dynamodb.DynamoDBInstalledAppContextStore;
+<% } %>
+import com.smartthings.sdk.smartapp.spring.SpringSmartAppDefinition;
+
+
+@Configuration
+public class <%- classNamePrefix %>Configuration {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Bean
+    public InstallHandler installHandler() {
+        return executionRequest -> {
+            log.debug("INSTALL: executionRequest = " + executionRequest);
+            return Response.ok(new InstallResponseData());
+        };
+    }
+
+    @Bean
+    public UpdateHandler updateHandler() {
+        return executionRequest -> {
+            log.debug("UPDATE: executionRequest = " + executionRequest);
+            return Response.ok(new UpdateResponseData());
+        };
+    }
+
+    @Bean
+    public UninstallHandler uninstallHandler() {
+        return executionRequest -> {
+            log.debug("UNINSTALL: executionRequest = " + executionRequest);
+            return Response.ok(new UninstallResponseData());
+        };
+    }
+
+<% if (contextStore == 'dynamodb') { %>
+    @Bean
+    public CloseableHttpClient httpClient() {
+        return HttpClients.createDefault();
+    }
+<% } %>
+
+    @Bean
+    public ApiClient apiClient() {
+        return new ApiClient();
+    }
+
+    @Bean
+    public HttpVerificationService httpVerificationService() {
+        return new HttpVerificationService();
+    }
+
+<% if (contextStore == 'dynamodb') { %>
+    @Bean
+    TokenRefreshService tokenRefreshService(@Value("${smartThingsOAuthClientId}") String clientId,
+            @Value("${smartThingsOAuthClientSecret}") String clientSecret) {
+        return new TokenRefreshServiceImpl(clientId, clientSecret, httpClient());
+    }
+
+    @Bean
+    public DefaultInstalledAppContextStore installedAppContextStore(
+            TokenRefreshService tokenRefreshService) {
+        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.defaultClient();
+        DynamoDB dynamoDB = new DynamoDB(client);
+        return new DynamoDBInstalledAppContextStore(dynamoDB, tokenRefreshService);
+    }
+
+<% } %>
+    @Bean
+    public SmartAppDefinition smartAppDefinition(ApplicationContext applicationContext) {
+        // SpringSmartAppDefinition can find all of the necessary components in
+        // the given ApplicationContext.
+        return SpringSmartAppDefinition.of(applicationContext);
+    }
+}

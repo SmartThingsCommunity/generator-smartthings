@@ -1,0 +1,101 @@
+package <%- basePackageName %>.handlers;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.smartthings.sdk.smartapp.core.Response;
+import com.smartthings.sdk.smartapp.core.extensions.ConfigurationHandler;
+import com.smartthings.sdk.smartapp.core.models.*;
+
+
+/**
+ * This class extends ConfigurationHandler to handle incoming requests.
+ * The Configuration page defines not only the look and feel of your
+ * app's presence within the SmartThings app, but it defines what
+ * your app will have access to once installed.
+ */
+@Component
+public class <%- classNamePrefix %>ConfigurationHandler implements ConfigurationHandler {
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    @Override
+    public ExecutionResponse handle(ExecutionRequest executionRequest) {
+        log.debug("CONFIGURATION: executionRequest = " + executionRequest);
+
+        ConfigurationData configData = executionRequest.getConfigurationData();
+        if (configData == null) {
+            log.error("configurationData required in ExecutionRequest for ConfigurationHandler");
+            return Response.notFound();
+        }
+
+        ConfigurationPhase phase = configData.getPhase();
+
+        if (phase == ConfigurationPhase.INITIALIZE) {
+            // The first phase is INITIALIZE, where we define the
+            // basics of your app configuration.
+            return buildInitializeResponse();
+        }
+
+        if (phase == ConfigurationPhase.PAGE) {
+            // The subsequent phase is PAGE, and you will need to handle
+            // the requested pageId, returning the appropriate response
+            // object.
+            // For more information on how pages are structured and what
+            // settings are available, please see the documentation:
+            // https://smartthings.developer.samsung.com/develop/guides/smartapps/configuration.html
+            return buildResponse();
+        }
+
+        log.error("missing phase in configurationData");
+        return Response.notFound();
+    }
+
+    private ExecutionResponse buildInitializeResponse() {
+        InitializeSetting initialize = new InitializeSetting()
+            .id("init")
+            .name("<%- applicationName %>")
+            .description("<%- applicationDescription %>")
+            .firstPageId("config")
+            .disableCustomDisplayName(false)
+<% smartAppPermissions.forEach(permission => { -%>
+            .addPermissionsItem("<%- permission %>")
+<% }); -%>
+            .disableRemoveApp(false);
+        return Response.ok(new ConfigurationResponseData().initialize(initialize));
+    }
+
+    public ExecutionResponse buildResponse() {
+        SectionSetting deviceSetting = new DeviceSetting()
+            .multiple(true)
+            .preselect(true)
+            .addPermissionsItem(DeviceSetting.PermissionsEnum.R)
+            .addPermissionsItem(DeviceSetting.PermissionsEnum.X)
+            .addCapabilitiesItem("switch")
+            .id("selectedSwitches")
+            .name("Device(s) to turn on at 7 a.m.")
+            .description("Tap to select")
+            .type(SettingType.DEVICE);
+        Section deviceSection = new Section().name("Device Settings Section")
+            .addSettingsItem(deviceSetting);
+
+        SectionSetting textSetting = new TextSetting()
+            .minLength(3)
+            .postMessage("Post Message")
+            .id("favoriteQuote")
+            .name("Favorite Quote")
+            .description("Enter something, anything you want")
+            .type(SettingType.TEXT);
+        Section settingsTestSection = new Section()
+            .name("Settings Test Section")
+            .addSettingsItem(textSetting);
+
+        Page page = new Page()
+            .pageId("config")
+            .complete(true)
+            .name("This is the first configuration page")
+            .addSectionsItem(deviceSection)
+            .addSectionsItem(settingsTestSection);
+        return Response.ok(new ConfigurationResponseData().page(page));
+    }
+}

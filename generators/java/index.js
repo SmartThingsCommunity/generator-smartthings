@@ -186,7 +186,7 @@ module.exports = class extends Generator {
 		this.filenameSubstitutions.forEach(sub => {
 			sub.fromRE = new RegExp(`__${sub.from}__`, 'g')
 		})
-		this._processTemplateFiles('springboot')
+		await this._processTemplateFiles('springboot')
 	}
 
 	end() {

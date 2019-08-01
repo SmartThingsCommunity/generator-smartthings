@@ -56,18 +56,18 @@ module.exports = class extends Generator {
 					pageSize: 8,
 					message: chalk.hex('#15bfff').bold.underline('What type of app do you want to create?'),
 					choices: [{
-						name: chalk.white.bold('SmartApp') + '\tAutomation for SmartThings App ' + chalk.gray.italic('\n\t\tFor automations and orchestrating devices'),
+						name: chalk.white.bold('SmartApp') + '\tAutomation for SmartThings App ' + chalk.italic('\n\t\tFor automations and orchestrating devices'),
 						value: 'app-smartapp'
 					}, {
-						name: chalk.white.bold('SmartApp') + '\tAPI Integration ' + chalk.gray.italic('\n\t\tFor integrating SmartThings into your service'),
+						name: chalk.white.bold('SmartApp') + '\tAPI Integration ' + chalk.italic('\n\t\tFor integrating SmartThings into your service'),
 						value: 'app-api-only',
 						disabled: 'coming soon'
 					}, {
-						name: chalk.white.bold('SmartApp') + '\tCloud Device Integration' + chalk.gray.italic('\n\t\tFor advanced devices, or if your cloud doesn\'t support OAuth 2.0'),
+						name: chalk.white.bold('SmartApp') + '\tCloud Device Integration' + chalk.italic('\n\t\tFor advanced devices, or if your cloud doesn\'t support OAuth 2.0'),
 						value: 'app-c2c-smartapp',
 						disabled: 'coming soon'
 					}, {
-						name: chalk.white.bold('ST Schema') + '\tCloud Device Integration ' + chalk.gray.italic('\n\t\tFor clouds that support OAuth 2.0'),
+						name: chalk.white.bold('ST Schema') + '\tCloud Device Integration ' + chalk.italic('\n\t\tFor clouds that support OAuth 2.0'),
 						value: 'app-c2c-st-schema',
 						disabled: 'coming soon'
 					}]
@@ -184,7 +184,7 @@ module.exports = class extends Generator {
 					when: this.appConfig.generateSmartAppFeatures,
 					default: false,
 					message: chalk.hex('#15bfff').bold.underline('Do you want to configure language localization?'),
-					suffix: chalk.gray(' (i18n)')
+					suffix: chalk(' (i18n)')
 				}).then(answer => {
 					generator.appConfig.smartAppConfigureI18n = answer.smartAppConfigureI18n
 				})
@@ -197,13 +197,13 @@ module.exports = class extends Generator {
 					name: 'smartAppPermissions',
 					when: this.appConfig.generateSmartAppFeatures,
 					pageSize: 5,
-					message: 'What permission scopes does your SmartApp need? ' + chalk.gray('Remember – the fewer, the better!'),
+					message: 'What permission scopes does your SmartApp need? ' + chalk.italic('Remember – the fewer, the better!'),
 					choices: [
-						{name: 'Read devices ' + chalk.gray('Read details about a device, including device attribute state.'), value: 'r:devices:*', checked: true},
-						{name: 'Write devices ' + chalk.gray('Update details such as the device name, or delete a device.'), value: 'w:devices:*'},
-						{name: 'Execute devices ' + chalk.gray('Execute commands on a device.'), value: 'x:devices:*'},
-						{name: 'Install device profiles ' + chalk.gray('Create devices of the type associated with the device profile.'), value: 'i:deviceprofiles'},
-						{name: 'Read locations ' + chalk.gray('Read details of a location, such as geocoordinates and temperature scale.'), value: 'r:locations:*'}
+						{name: 'Read devices ' + chalk.italic('Read details about a device, including device attribute state.'), value: 'r:devices:*', checked: true},
+						{name: 'Write devices ' + chalk.italic('Update details such as the device name, or delete a device.'), value: 'w:devices:*'},
+						{name: 'Execute devices ' + chalk.italic('Execute commands on a device.'), value: 'x:devices:*'},
+						{name: 'Install device profiles ' + chalk.italic('Create devices of the type associated with the device profile.'), value: 'i:deviceprofiles'},
+						{name: 'Read locations ' + chalk.italic('Read details of a location, such as geocoordinates and temperature scale.'), value: 'r:locations:*'}
 					]
 				}).then(answer => {
 					generator.appConfig.smartAppPermissions = answer.smartAppPermissions
@@ -247,7 +247,7 @@ module.exports = class extends Generator {
 					type: 'list',
 					name: 'contextStoreProvider',
 					message: chalk.hex('#15bfff').bold.underline('What is your context store provider?'),
-					suffix: chalk.gray.italic(' Allows the SDK to manage user access/refresh tokens'),
+					suffix: chalk.italic(' Allows the SDK to manage user access/refresh tokens'),
 					when: ['app-smartapp', 'app-c2c-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1,
 					default: 'dynamodb',
 					choices: [

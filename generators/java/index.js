@@ -87,11 +87,11 @@ module.exports = class extends Generator {
 			pageSize: 5,
 			message: this._fmtMsg('What permission scopes does your SmartApp need?', 'Remember – the fewer, the better! These must match settings in Developer Workspace.'),
 			choices: [
-				{name: 'Read devices ' + chalk.gray('Read details about a device, including device attribute state.'), value: 'r:devices:*', checked: true},
-				{name: 'Write devices ' + chalk.gray('Update details such as the device name, or delete a device.'), value: 'w:devices:*'},
-				{name: 'Execute devices ' + chalk.gray('Execute commands on a device.'), value: 'x:devices:*'},
-				{name: 'Install device profiles ' + chalk.gray('Create devices of the type associated with the device profile.'), value: 'i:deviceprofiles'},
-				{name: 'Read locations ' + chalk.gray('Read details of a location, such as geocoordinates and temperature scale.'), value: 'r:locations:*'}
+				{name: 'Read devices ' + chalk.italic('Read details about a device, including device attribute state.'), value: 'r:devices:*', checked: true},
+				{name: 'Write devices ' + chalk.italic('Update details such as the device name, or delete a device.'), value: 'w:devices:*'},
+				{name: 'Execute devices ' + chalk.italic('Execute commands on a device.'), value: 'x:devices:*'},
+				{name: 'Install device profiles ' + chalk.italic('Create devices of the type associated with the device profile.'), value: 'i:deviceprofiles'},
+				{name: 'Read locations ' + chalk.italic('Read details of a location, such as geocoordinates and temperature scale.'), value: 'r:locations:*'}
 			]
 		}))
 
@@ -132,7 +132,7 @@ module.exports = class extends Generator {
 
 	_fmtMsg(message, notes = null) {
 		if (notes) {
-			return chalk.hex('#15bfff').bold.underline(message + ' ' + chalk.gray(notes))
+			return chalk.hex('#15bfff').bold.underline(message + ' ' + chalk.italic(notes))
 		}
 
 		return chalk.hex('#15bfff').bold.underline(message)

@@ -15,13 +15,22 @@
     "yeoman-generator"
   ],
   "devDependencies": {
-    "chai": "^4.2.0",
+    "@semantic-release/changelog": "~3.0.4",
+    "@semantic-release/commit-analyzer": "~6.2.0",
+    "@semantic-release/git": "~7.0.16",
+    "@semantic-release/release-notes-generator": "~7.2.1",
+    "chai": "~4.2.0",
+    "codecov": "3.5.0",
     "husky": "^2.7.0",
     "lint-staged": "^8.2.1",
-    "mocha": "^6.1.4",
-    "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "xo": "^0.24.0",
+    "conventional-changelog-eslint": "~3.0.1",
+    "mocha": "~6.2.0",
+    "nyc": "~14.1.1",
+    "semantic-git-commit-cli": "~3.2.2",
+    "semantic-release": "^15.13.19",
+    "sinon": "~7.3.2",
     "yeoman-assert": "^3.1.1",
     "yeoman-test": "^2.0.0"
   },
@@ -29,9 +38,11 @@
     "npm": ">= 4.0.0"
   },
   "scripts": {
-    "test": "xo && nyc mocha test/**/*.js"
+    "lint": "xo",
+    "test": "xo && nyc --reporter=text mocha test/**/*",
+    "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "semantic-release": "semantic-release -e ./config/release.config.js"
   },
-  "license": "Apache-2.0",
   "dependencies": {
     "chalk": "^2.4.2",
     "inquirer": "^6.5.0",
@@ -39,6 +50,48 @@
     "semver": "^6.2.0",
     "yeoman-generator": "^4.0.1",
     "yosay": "^2.0.2"
+  },
+  "nyc": {
+    "watermarks": {
+      "lines": [
+        40,
+        95
+      ],
+      "functions": [
+        40,
+        95
+      ],
+      "branches": [
+        40,
+        95
+      ],
+      "statements": [
+        40,
+        95
+      ]
+    }
+  },
+  "xo": {
+    "space": false,
+    "semicolon": false,
+    "rules": {
+      "no-useless-constructor": 1,
+      "promise/prefer-await-to-then": 1,
+      "prefer-object-spread": 1,
+      "no-template-curly-in-string": 0,
+      "quote-props": [
+        "error",
+        "consistent"
+      ]
+    },
+    "overrides": [
+      {
+        "files": "**/templates/**/*.js",
+        "rules": {
+          "import/no-unresolved": 0
+        }
+      }
+    ]
   },
   "lint-staged": {
     "*.js": [
@@ -50,10 +103,7 @@
       "git add"
     ]
   },
-  "xo": {
-    "space": 2,
-    "semicolon": false
-  },
+  "license": "Apache-2.0",
   "homepage": "https://github.com/SmartThingsCommunity/generator-smartthings",
   "repository": "SmartThingsCommunity/generator-smartthings"
 }

@@ -3,27 +3,28 @@ const invalidIdMessage = 'Invalid app identifier'
 const missingIdMessage = 'Missing app identifier'
 module.exports = {
 
-  /**
+	/**
    * @param {string} id The id to validate
    * @returns {string|boolean} Invalid when false
    */
-  validateAppId(id) {
-    if (!id) {
-      return missingIdMessage
-    }
+	validateAppId(id) {
+		if (!id) {
+			return missingIdMessage
+		}
 
-    if (!appIdRegexp.test(id)) {
-      return invalidIdMessage
-    }
+		if (!appIdRegexp.test(id)) {
+			return invalidIdMessage
+		}
 
-    return true
-  },
+		return true
+	},
 
-  /**
-   * @param {{ length: number; }} name The value to validate
+	/**
+   * @param {String=} name The value to validate
    * @returns {boolean} Invalid when false
    */
-  validateNotEmpty(name) {
-    return name && name.length > 0
-  }
+	validateNotEmpty(name) {
+		return name !== undefined &&
+      name.length > 0
+	}
 }

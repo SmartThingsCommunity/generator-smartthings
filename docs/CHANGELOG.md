@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.0.1...v1.1.0) (2019-08-01)
+
+
+### Bug Fixes
+
+* props src populates with pkg.directories.lib ([#18](https://github.com/SmartThingsCommunity/generator-smartthings/issues/18)) [skip ci] ([a8b2cd9](https://github.com/SmartThingsCommunity/generator-smartthings/commit/a8b2cd9))
+* text color ([#20](https://github.com/SmartThingsCommunity/generator-smartthings/issues/20)) ([7c051ae](https://github.com/SmartThingsCommunity/generator-smartthings/commit/7c051ae))
+
+
+### Features
+
+* add generator package version to initial yosay ([#19](https://github.com/SmartThingsCommunity/generator-smartthings/issues/19)) [skip ci] ([6bfc6d7](https://github.com/SmartThingsCommunity/generator-smartthings/commit/6bfc6d7))
+
 ## [1.0.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.0.0...v1.0.1) (2019-08-01)
 
 

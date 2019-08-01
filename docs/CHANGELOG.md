@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.0.0...v1.0.1) (2019-08-01)
+
+
+### Bug Fixes
+
+* add missing await so writing is complete when future completes ([#13](https://github.com/SmartThingsCommunity/generator-smartthings/issues/13)) ([fd5cf62](https://github.com/SmartThingsCommunity/generator-smartthings/commit/fd5cf62))
+
 # 1.0.0 (2019-08-01)
 
 

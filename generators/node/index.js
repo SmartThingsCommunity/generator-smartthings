@@ -23,7 +23,7 @@ module.exports = class extends Generator {
 		this.props = {
 			name: this.pkg.name || process.cwd().split(path.sep).pop(),
 			description: this.pkg.description,
-			src: this.pkg.directories && this.package.directories.lib
+			src: this.pkg.directories && this.pkg.directories.lib
 		}
 
 		this.dependencies = [

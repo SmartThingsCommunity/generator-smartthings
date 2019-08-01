@@ -1,12 +1,13 @@
 'use strict'
-
+const path = require('path')
 const {default: chalk} = require('chalk')
 const yosay = require('yosay')
 const Generator = require('yeoman-generator')
 
 module.exports = class extends Generator {
 	async prompting() {
-		this.log(yosay(`Welcome to the ${chalk.hex('#15bfff').bold.underline('SmartThings')} generator!`))
+		const generatorPkg = this.fs.readJSON(path.join(__dirname, '../..', 'package.json'))
+		this.log(yosay(`Welcome to the ${chalk.hex('#15bfff').bold.underline('SmartThings')} app generator! v${generatorPkg.version}`))
 
 		this.answers = await this.prompt([{
 			type: 'list',

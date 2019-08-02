@@ -162,7 +162,7 @@ module.exports = class extends Generator {
 					type: 'checkbox',
 					name: 'smartAppPermissions',
 					pageSize: 5,
-					message: chalk.hex('#15bfff').bold.underline('What permission scopes does your SmartApp need? ') + chalk.gray('The fewer, the better!'),
+					message: chalk.hex('#15bfff').bold.underline('What permission scopes does your SmartApp need? ') + chalk.dim('The fewer, the better!'),
 					choices: [
 						{name: 'Read devices ' + chalk.dim.italic('Read details about a device'), value: 'r:devices:*', checked: true},
 						{name: 'Execute devices ' + chalk.dim.italic('Execute commands on a device'), value: 'x:devices:*'},
@@ -413,8 +413,8 @@ module.exports = class extends Generator {
 					suffix: ' Must be installed globally',
 					default: 'npm',
 					choices: [
-						{name: chalk.redBright.italic('npm'), value: 'npm'},
-						{name: chalk.blueBright.italic('yarn'), value: 'yarn'}
+						{name: chalk.redBright('npm'), value: 'npm'},
+						{name: chalk.blueBright('yarn'), value: 'yarn'}
 					]
 				}).then(pkgManagerAnswer => {
 					generator.appConfig.pkgManager = pkgManagerAnswer.pkgManager
@@ -607,8 +607,9 @@ module.exports = class extends Generator {
 			case 'eslint':
 				extensionsJson.recommendations.push('dbaeumer.vscode-eslint')
 				pkgJson.devDependencies.eslint = '^5.16.0'
-				pkgJson.scripts.lint = 'eslint'
-				pkgJson.scripts['lint:fix'] = 'eslint --fix'
+				pkgJson.devDependencies['eslint-config-strongloop'] = '^2.1.0'
+				pkgJson.scripts.lint = 'eslint --ignore-path .gitignore .'
+				pkgJson.scripts['lint:fix'] = 'eslint --fix --ignore-path .gitignore .'
 				this.fs.copyTpl(this.sourceRoot() + '/.eslintrc.json', context.name + '/.eslintrc.json', context)
 				break
 			default: break

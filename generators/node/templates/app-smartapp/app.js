@@ -1,4 +1,6 @@
 #!/usr/bin/env nodejs
+'use strict'
+
 const SmartApp = require('@smartthings/smartapp')
 <% if (contextStoreProvider === 'dynamodb') { _%>
 const DynamoDBContextStore = require('@smartthings/dynamodb-context-store')

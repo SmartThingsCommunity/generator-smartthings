@@ -2,6 +2,7 @@
 const path = require('path')
 const {default: chalk} = require('chalk')
 const yosay = require('yosay')
+const axios = require('axios').default
 const inquirer = require('inquirer')
 const Generator = require('../../lib/generator')
 const validator = require('./validator')
@@ -76,6 +77,19 @@ module.exports = class extends Generator {
 				})
 			},
 
+			// Ask for a SmartThings personal access token
+			askForPat: () => {
+				const suffix = chalk.dim.italic(' Get an ') + chalk.dim.bold.italic('Application') + chalk.dim.italic(' scope token from https://account.smartthings.com/tokens')
+				return generator.prompt({
+					type: 'input',
+					name: 'smartThingsPat',
+					message: chalk.hex('#15bfff').bold.underline('Enter a SmartThings personal access token'),
+					suffix
+				}).then(smartThingsPatAnswer => {
+					generator.appConfig.smartThingsPat = smartThingsPatAnswer.smartThingsPat
+				})
+			},
+
 			// Ask for app display name ("displayName" in package.json)
 			askForAppDisplayName: () => {
 				const {appDisplayName} = generator.options
@@ -88,6 +102,7 @@ module.exports = class extends Generator {
 					type: 'input',
 					name: 'displayName',
 					message: chalk.hex('#15bfff').bold.underline('What\'s the name of your app?'),
+					validate: validator.validateNotEmpty,
 					default: generator.appConfig.displayName
 				}).then(displayNameAnswer => {
 					generator.appConfig.displayName = displayNameAnswer.displayName
@@ -133,9 +148,30 @@ module.exports = class extends Generator {
 				return generator.prompt({
 					type: 'input',
 					name: 'description',
-					message: chalk.hex('#15bfff').bold.underline('What\'s the description of your app?')
+					default: `Description of ${this.appConfig.displayName}`,
+					message: chalk.hex('#15bfff').bold.underline('What\'s the description of your app?'),
+					validate: validator.validateNotEmpty
 				}).then(descriptionAnswer => {
 					generator.appConfig.description = descriptionAnswer.description
+				})
+			},
+
+			// Ask to build app permissions based on what's available in workspace
+			askForSmartAppPermissions: () => {
+				return generator.prompt({
+					type: 'checkbox',
+					name: 'smartAppPermissions',
+					pageSize: 5,
+					message: chalk.hex('#15bfff').bold.underline('What permission scopes does your SmartApp need? ') + chalk.gray('The fewer, the better!'),
+					choices: [
+						{name: 'Read devices ' + chalk.dim.italic('Read details about a device'), value: 'r:devices:*', checked: true},
+						{name: 'Execute devices ' + chalk.dim.italic('Execute commands on a device'), value: 'x:devices:*'},
+						{name: 'Write devices ' + chalk.dim.italic('Update or delete a device'), value: 'w:devices:*'},
+						{name: 'Install device profiles ' + chalk.dim.italic('Create devices of the device profile type'), value: 'i:deviceprofiles'},
+						{name: 'Read locations ' + chalk.dim.italic('Read details of a location (geocoordinates and temperature scale)'), value: 'r:locations:*'}
+					]
+				}).then(answer => {
+					generator.appConfig.smartAppPermissions = answer.smartAppPermissions
 				})
 			},
 
@@ -156,8 +192,8 @@ module.exports = class extends Generator {
 					type: 'confirm',
 					name: 'smartAppDisableCustomName',
 					when: this.appConfig.generateSmartAppFeatures,
-					default: false,
-					message: chalk.hex('#15bfff').bold.underline('Do you want to prevent users from renaming your app?')
+					default: true,
+					message: chalk.hex('#15bfff').bold.underline('Prevent users from renaming your app?')
 				}).then(answer => {
 					generator.appConfig.smartAppDisableCustomName = answer.smartAppDisableCustomName
 				})
@@ -169,8 +205,8 @@ module.exports = class extends Generator {
 					type: 'confirm',
 					name: 'smartAppDisableRemoveApp',
 					when: this.appConfig.generateSmartAppFeatures,
-					default: false,
-					message: chalk.hex('#15bfff').bold.underline('Do you want to prevent users from removing the app during the configuration flow?')
+					default: true,
+					message: chalk.hex('#15bfff').bold.underline('Prevent users from removing the app during configuration?')
 				}).then(answer => {
 					generator.appConfig.smartAppDisableRemoveApp = answer.smartAppDisableRemoveApp
 				})
@@ -182,31 +218,11 @@ module.exports = class extends Generator {
 					type: 'confirm',
 					name: 'smartAppConfigureI18n',
 					when: this.appConfig.generateSmartAppFeatures,
-					default: false,
-					message: chalk.hex('#15bfff').bold.underline('Do you want to configure language localization?'),
-					suffix: chalk(' (i18n)')
+					default: true,
+					message: chalk.hex('#15bfff').bold.underline('Configure language localization?'),
+					suffix: chalk.dim.italic(' (i18n)')
 				}).then(answer => {
 					generator.appConfig.smartAppConfigureI18n = answer.smartAppConfigureI18n
-				})
-			},
-
-			// Ask to build app permissions based on what's available in workspace
-			askForSmartAppPermissions: () => {
-				return generator.prompt({
-					type: 'checkbox',
-					name: 'smartAppPermissions',
-					when: this.appConfig.generateSmartAppFeatures,
-					pageSize: 5,
-					message: 'What permission scopes does your SmartApp need? ' + chalk.italic('Remember – the fewer, the better!'),
-					choices: [
-						{name: 'Read devices ' + chalk.italic('Read details about a device, including device attribute state.'), value: 'r:devices:*', checked: true},
-						{name: 'Write devices ' + chalk.italic('Update details such as the device name, or delete a device.'), value: 'w:devices:*'},
-						{name: 'Execute devices ' + chalk.italic('Execute commands on a device.'), value: 'x:devices:*'},
-						{name: 'Install device profiles ' + chalk.italic('Create devices of the type associated with the device profile.'), value: 'i:deviceprofiles'},
-						{name: 'Read locations ' + chalk.italic('Read details of a location, such as geocoordinates and temperature scale.'), value: 'r:locations:*'}
-					]
-				}).then(answer => {
-					generator.appConfig.smartAppPermissions = answer.smartAppPermissions
 				})
 			},
 
@@ -215,16 +231,25 @@ module.exports = class extends Generator {
 				return generator.prompt({
 					type: 'list',
 					name: 'hostingProvider',
-					message: chalk.hex('#15bfff').bold.underline('What is your hosting provider?'),
-					default: 'webhook',
+					message: chalk.hex('#15bfff').bold.underline('How are you hosting your app?'),
+					default: 'express',
 					choices: [
-						{name: 'AWS Lambda', value: 'lambda'},
 						{name: 'Webhook with Express', value: 'express'},
-						{name: 'Webhook with Restify', value: 'restify', disabled: 'coming soon'},
-						{name: 'Webhook with Foxify', value: 'foxify', disabled: 'coming soon'}
+						{name: 'AWS Lambda', value: 'lambda'}
 					]
 				}).then(hostingAnswer => {
 					generator.appConfig.hostingProvider = hostingAnswer.hostingProvider
+				})
+			},
+
+			askForWebhookTargetUrl: () => {
+				return generator.prompt({
+					type: 'input',
+					name: 'webhookTargetUrl',
+					message: chalk.hex('#15bfff').bold.underline('What is your webhook\'s public-DNS target URL?'),
+					when: this.appConfig.hostingProvider !== 'lambda'
+				}).then(webhookTargetUrlAnswer => {
+					generator.appConfig.webhookTargetUrl = webhookTargetUrlAnswer.webhookTargetUrl
 				})
 			},
 
@@ -233,8 +258,9 @@ module.exports = class extends Generator {
 				return generator.prompt({
 					type: 'input',
 					name: 'lambdaArn',
-					message: chalk.hex('#15bfff').bold.underline('What is your AWS Lambda ARN?'),
+					message: chalk.hex('#15bfff').bold.underline('What are your AWS Lambda function ARN(s)'),
 					prefix: '(optional)',
+					suffix: chalk.dim.italic(' space or comma delimited'),
 					when: this.appConfig.hostingProvider === 'lambda'
 				}).then(lambdaArnAnswer => {
 					generator.appConfig.lambdaArn = lambdaArnAnswer.lambdaArn
@@ -253,10 +279,52 @@ module.exports = class extends Generator {
 					choices: [
 						{name: 'AWS DynamoDB', value: 'dynamodb'},
 						{name: 'Firebase FireStore', value: 'firestore', disabled: 'coming soon'},
-						{name: 'Custom', value: 'custom'}
+						{name: 'None', value: 'none'}
 					]
 				}).then(contextAnswer => {
 					generator.appConfig.contextStoreProvider = contextAnswer.contextStoreProvider
+				})
+			},
+
+			askForAwsAccessKeyId: () => {
+				return generator.prompt({
+					type: 'password',
+					name: 'awsAccessKeyId',
+					message: chalk.hex('#15bfff').bold.underline('What is your AWS access key Id?'),
+					suffix: chalk.italic(' (DynamoDB)'),
+					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 && generator.appConfig.contextStoreProvider === 'dynamodb')
+				}).then(awsAccessKeyIdAnswer => {
+					generator.appConfig.awsAccessKeyId = awsAccessKeyIdAnswer.awsAccessKeyId
+				})
+			},
+
+			askForAwsSecretAccessKey: () => {
+				return generator.prompt({
+					type: 'password',
+					name: 'awsSecretAccessKey',
+					message: chalk.hex('#15bfff').bold.underline('What is your AWS secret access key?'),
+					suffix: chalk.italic(' (DynamoDB)'),
+					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 &&
+          generator.appConfig.contextStoreProvider === 'dynamodb' &&
+          generator.appConfig.awsAccessKeyId)
+				}).then(awsSecretAccessKeyAnswer => {
+					generator.appConfig.awsSecretAccessKey = awsSecretAccessKeyAnswer.awsSecretAccessKey
+				})
+			},
+
+			askForAwsRegion: () => {
+				return generator.prompt({
+					type: 'input',
+					name: 'awsRegion',
+					message: chalk.hex('#15bfff').bold.underline('What is your AWS region?'),
+					suffix: chalk.italic(' (DynamoDB)'),
+					default: 'us-east-1',
+					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 &&
+          generator.appConfig.contextStoreProvider === 'dynamodb' &&
+          generator.appConfig.awsAccessKeyId &&
+          generator.appConfig.awsSecretAccessKey)
+				}).then(awsRegionAnswer => {
+					generator.appConfig.awsRegion = awsRegionAnswer.awsRegion
 				})
 			},
 
@@ -272,7 +340,7 @@ module.exports = class extends Generator {
 					type: 'confirm',
 					name: 'checkJavaScript',
 					message: chalk.hex('#15bfff').bold.underline('Enable JavaScript type checking in \'jsconfig.json\'?'),
-					default: false
+					default: true
 				}).then(strictJavaScriptAnswer => {
 					generator.appConfig.checkJavaScript = strictJavaScriptAnswer.checkJavaScript
 				})
@@ -303,7 +371,7 @@ module.exports = class extends Generator {
 					message: chalk.hex('#15bfff').bold.underline('Which testing framework do you prefer?'),
 					default: 'mocha',
 					choices: [
-						{name: 'Mocha + assert', value: 'mocha'},
+						{name: 'Mocha', value: 'mocha'},
 						{name: 'Jest', value: 'jest', disabled: 'coming soon'},
 						new inquirer.Separator(),
 						{name: 'None', value: 'none'}
@@ -370,12 +438,20 @@ module.exports = class extends Generator {
 		return result
 	}
 
-	writing() {
+	async writing() {
 		this.sourceRoot(path.join(__dirname, './templates/', this.appConfig.type))
 
 		// Available types: 'smartapp', 'c2c-smartapp', 'c2c-st-schema', 'api-only'
 		switch (this.appConfig.type) {
 			case 'app-smartapp':
+				if (this.appConfig.smartThingsPat) {
+					const success = await this._createAppRecord('AUTOMATION')
+					if (!success) {
+						this.log(yosay('An error occurred when creating your SmartThings app. Try again.'))
+						this.abort = true
+					}
+				}
+
 				this._writingSmartApp()
 				break
 			case 'app-c2c-smartapp':
@@ -387,15 +463,74 @@ module.exports = class extends Generator {
 		}
 	}
 
+	async _createAppRecord(classifications) {
+		const pat = this.appConfig.smartThingsPat
+		axios.defaults.headers.common.Authorization = `Bearer ${pat}`
+		axios.defaults.headers.post['Content-Type'] = 'application/json'
+		axios.defaults.baseURL = 'https://api.smartthings.com'
+		try {
+			const {data: app} = await axios.get(`/apps/${this.appConfig.name}`)
+			if (app) {
+				this.log('Try again with a new app name')
+				return false
+			}
+		} catch (error) {
+			if (error.response.status === 403) {
+				this.log('App by this name is not found, will create a new one.')
+			}
+		}
+
+		try {
+			const {data: createdApp} = await axios.post('/apps?signatureType=ST_PADLOCK&requireConfirmation=true', {
+				appName: this.appConfig.name,
+				displayName: this.appConfig.displayName,
+				description: this.appConfig.description,
+				singleInstance: false,
+				appType: this.appConfig.hostingProvider === 'lambda' ? 'LAMBDA_SMART_APP' : 'WEBHOOK_SMART_APP',
+				classifications: [classifications],
+				oauth: {
+					clientName: this.appConfig.name,
+					scope: this.appConfig.smartAppPermissions
+				},
+				...(this.appConfig.hostingProvider === 'lambda' && {
+					lambdaSmartApp: {
+						functions: this.appConfig.lambdaArn.split(/[ ,]+/)
+					}
+				}),
+				...(this.appConfig.hostingProvider !== 'lambda' && {
+					webhookSmartApp: {
+						targetUrl: this.appConfig.webhookTargetUrl
+					}
+				})
+			})
+			this.appConfig.appId = createdApp.app.appId
+			this.appConfig.oauthClientId = createdApp.oauthClientId
+			this.appConfig.oauthClientSecret = createdApp.oauthClientSecret
+			this.registerSmartApp = true
+			return true
+		} catch (error) {
+			return false
+		}
+	}
+
 	_writingSmartApp() {
+		if (this.abort) {
+			return
+		}
+
 		const context = this.appConfig
 		this.fs.copy(this.sourceRoot() + '/vscode', context.name + '/.vscode')
+		this.fs.copy(this.sourceRoot() + '/locales/en.json', context.name + '/locales/en.json')
 
 		this.fs.copyTpl(this.sourceRoot() + '/app.js', context.name + '/app.js', context)
 		this.fs.copyTpl(this.sourceRoot() + '/package.json', context.name + '/package.json', context)
 		this.fs.copyTpl(this.sourceRoot() + '/README.md', context.name + '/README.md', context)
 		this.fs.copyTpl(this.sourceRoot() + '/CHANGELOG.md', context.name + '/CHANGELOG.md', context)
 		this.fs.copy(this.sourceRoot() + '/vscodeignore', context.name + '/.vscodeignore')
+
+		if (this.appConfig.hostingProvider !== 'lambda' && this.appConfig.smartThingsPat) {
+			this.fs.copyTpl(this.sourceRoot() + '/.env', context.name + '/.env', context)
+		}
 
 		if (this.appConfig.gitInit) {
 			this.fs.copy(this.sourceRoot() + '/gitignore', context.name + '/.gitignore')
@@ -407,73 +542,93 @@ module.exports = class extends Generator {
 
 		const pkgJson = {
 			dependencies: {},
-			devDependencies: {}
+			devDependencies: {},
+			scripts: {}
 		}
 
-		pkgJson.dependencies['@smartthings/smartapp'] = '^1.0.0'
+		const extensionsJson = {recommendations: []}
+
+		pkgJson.dependencies['@smartthings/smartapp'] = '^1.8.0'
 
 		switch (this.appConfig.hostingProvider) {
 			case 'lambda':
 				pkgJson.dependencies['aws-sdk'] = '^2.0.0'
 				break
 			case 'express':
-				pkgJson.dependencies.express = '~4.17.1'
-				pkgJson.dependencies['body-parser'] = '~1.19.0'
-				pkgJson.dependencies['cookie-parser'] = '~1.4.4'
-				break
-			case 'restify':
-				break
-			case 'foxify':
+				pkgJson.dependencies.dotenv = '^8.0.0'
+				pkgJson.dependencies.express = '^4.17.1'
 				break
 			default: break
 		}
 
 		switch (this.appConfig.contextStoreProvider) {
 			case 'dynamodb':
-				pkgJson.dependencies['@smartthings/dynamodb-context-store'] = '^1.0.0'
+				pkgJson.dependencies.dotenv = '^8.0.0'
+				pkgJson.dependencies['@smartthings/dynamodb-context-store'] = '^2.0.0'
 				break
 			case 'firestore':
 				pkgJson.dependencies['@smartthings/firestore-context-store'] = '^1.0.0'
 				break
-			case 'custom':
+			case 'none':
 			default:
 				break
 		}
 
 		switch (this.appConfig.tester) {
 			case 'mocha':
-				pkgJson.devDependencies.mocha = '~6.1.4'
+				pkgJson.devDependencies.mocha = '^6.1.4'
+				pkgJson.devDependencies.chai = '^4.2.0'
 				break
 			case 'jest':
-				pkgJson.devDependencies.jest = '~24.8.0'
+				pkgJson.devDependencies.jest = '^24.8.0'
 				break
 			default: break
 		}
 
+		if (this.appConfig.gitInit) {
+			extensionsJson.recommendations.push('codezombiech.gitignore')
+		}
+
 		switch (this.appConfig.linter) {
 			case 'xo':
-				pkgJson.devDependencies.xo = '~0.24.0'
+				extensionsJson.recommendations.push('samverschueren.linter-xo')
+				pkgJson.devDependencies.xo = '^0.24.0'
 				pkgJson.xo = {
 					semicolon: false,
-					space: 2
+					space: 2,
+					rules: {
+						'no-unused-vars': 1,
+						'no-multi-assign': 1
+					}
 				}
+				pkgJson.scripts.lint = 'xo'
+				pkgJson.scripts['lint:fix'] = 'xo --fix'
 				break
 			case 'eslint':
-				pkgJson.devDependencies.eslint = '~5.16.0'
+				extensionsJson.recommendations.push('dbaeumer.vscode-eslint')
+				pkgJson.devDependencies.eslint = '^5.16.0'
+				pkgJson.scripts.lint = 'eslint'
+				pkgJson.scripts['lint:fix'] = 'eslint --fix'
 				this.fs.copyTpl(this.sourceRoot() + '/.eslintrc.json', context.name + '/.eslintrc.json', context)
 				break
 			default: break
 		}
 
+		this.fs.extendJSON(this.destinationPath(context.name + '/.vscode/extensions.json'), extensionsJson)
 		this.fs.extendJSON(this.destinationPath(context.name + '/package.json'), pkgJson)
 
 		this.appConfig.installDependencies = true
 	}
 
 	install() {
+		if (this.abort) {
+			return
+		}
+
 		process.chdir(this.appConfig.name)
 		if (this.appConfig.installDependencies) {
 			this.installDependencies({
+				skipMessage: true,
 				yarn: this.appConfig.pkgManager === 'yarn',
 				npm: this.appConfig.pkgManager === 'npm',
 				bower: false
@@ -482,17 +637,32 @@ module.exports = class extends Generator {
 	}
 
 	end() {
+		if (this.abort) {
+			return
+		}
+
 		if (this.appConfig.gitInit) {
 			this.spawnCommand('git', ['init', '--quiet'])
+		}
+
+		if (this.appConfig.installDependencies && this.appConfig.linter) {
+			this.spawnCommand('npm', ['run', '--silent', 'lint:fix'])
 		}
 
 		this.log('')
 		this.log('Your app ' + this.appConfig.name + ' has been created.')
 		this.log('')
+
+		if (this.registerSmartApp) {
+			this.log('')
+			this.log(chalk.bold('Register to confirm your app at any time:'))
+			this.log(`  curl -X PUT -H "Authorization: Bearer ${this.appConfig.smartThingsPat}" ` + chalk.bold.underline(`https://api.smartthings.com/apps/${this.appConfig.appId}/register`))
+			this.log('')
+		}
+
 		this.log('To start editing with Visual Studio Code, use the following commands:')
 		this.log('')
-		this.log('    cd ' + this.appConfig.name)
-		this.log('    code .')
+		this.log('    code ' + this.appConfig.name)
 		this.log('\r\n')
 	}
 }

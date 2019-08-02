@@ -1,0 +1,12 @@
+{
+  "pages.mainPage.name": "Demo SmartApp",
+  "pages.mainPage.sections.sensors.name": "Sensors",
+	"pages.mainPage.settings.contactSensor.name": "Contact sensor triggers",
+	"pages.mainPage.sections.lights.name": "Trigger action lights",
+	"pages.mainPage.settings.addLights.name": "Add trigger action lights",
+	"pages.mainPage.settings.addLights.description": "These lights will turn on when the contact sensor opens.",
+	"pages.mainPage.settings.editLights.name": "Edit lights",
+	"pages.mainPage.settings.editLights.description": "Change which lights you want to turn on or off",
+	"pages.mainPage.settings.lights.name": "Lights",
+	"Tap to set": "Tap to set"
+}

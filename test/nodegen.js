@@ -16,14 +16,19 @@ describe('generator-smartthings:node', function() {
 				displayName: 'My Test App',
 				name: 'my-test-app',
 				description: 'My test app description',
+				smartAppPermissions: ['r:devices:*', 'x:devices:*'],
 				generateSmartAppFeatures: false,
 				hostingProvider: 'express',
 				contextStoreProvider: 'dynamodb',
+				awsAccessKeyId: 'bad-access-key',
+				awsSecretAccessKey: 'bad-secret-access-key',
+				awsRegion: 'us-east-2',
 				checkJavaScript: true,
 				linter: 'xo',
 				tester: 'mocha',
 				gitInit: false,
-				pkgManager: 'npm'
+				pkgManager: 'npm',
+				installDependencies: false
 			}).toPromise().then(() => {
 				const expected = {
 					name: 'my-test-app',
@@ -32,26 +37,34 @@ describe('generator-smartthings:node', function() {
 					version: '0.0.1',
 					main: './app.js',
 					scripts: {
-						start: 'node ./app.js'
+						'start': 'node ./app.js',
+						'lint': 'xo',
+						'lint:fix': 'xo --fix'
 					},
 					dependencies: {
-						'@smartthings/dynamodb-context-store': '^1.0.0',
-						'@smartthings/smartapp': '^1.0.0',
-						'express': '~4.17.1',
-						'body-parser': '~1.19.0',
-						'cookie-parser': '~1.4.4'
+						'@smartthings/smartapp': '^1.8.0',
+						'dotenv': '^8.0.0',
+						'express': '^4.17.1',
+						'@smartthings/dynamodb-context-store': '^2.0.0'
 					},
 					devDependencies: {
-						mocha: '~6.1.4',
-						xo: '~0.24.0'
+						'mocha': '^6.1.4',
+						'chai': '^4.2.0',
+						'xo': '^0.24.0'
 					},
 					xo: {
-						semicolon: false,
-						space: 2
+						'semicolon': false,
+						'space': 2,
+						'rules': {
+							'no-unused-vars': 1,
+							'no-multi-assign': 1
+						}
 					}
 				}
 				try {
 					assert.file([
+						'.vscode/extensions.json',
+						'.vscode/launch.json',
 						'CHANGELOG.md',
 						'README.md',
 						'jsconfig.json',

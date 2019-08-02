@@ -1,5 +1,4 @@
 #!/usr/bin/env nodejs
-const path = require('path')
 const SmartApp = require('@smartthings/smartapp')
 <% if (contextStoreProvider === 'dynamodb') { _%>
 const DynamoDBContextStore = require('@smartthings/dynamodb-context-store')
@@ -9,26 +8,35 @@ const FirestoreContextStore = require('@smartthings/firestore-context-store')
 <% } _%>
 <% if (hostingProvider === 'express') { _%>
 const express = require('express')
-const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
 const server = module.exports = express()
 <% } _%>
 <% if (hostingProvider !== 'lambda') { _%>
+require('dotenv').config()
 const PORT = 8080
 <% } _%>
 <% if (hostingProvider === 'express') { _%>
 server.use(express.json())
 <% } _%>
 
-/* Define the SmartApp */
 const smartapp = new SmartApp()
-    // @smartthings_rsa.pub is your on-disk public key
-    // If you do not have it yet, omit publicKey()
-    .publicKey('@smartthings_rsa.pub') // optional until app verified
-    // logs all lifecycle event requests and responses as pretty-printed JSON. Omit in production
-    .enableEventLogging()
-    <%_ if (generateSmartAppFeatures && smartAppPermissions) { -%>
+    .appId(process.env.ST_APP_ID)
+    .configureLogger(console, 2, true)
+    .configureI18n()
     .permissions(<%- JSON.stringify(smartAppPermissions) %>)
+    <%_ if (hostingProvider !== 'lambda') { -%>
+    .clientId(process.env.OAUTH_CLIENT_ID)
+    .clientSecret(process.env.OAUTH_CLIENT_SECRET)
+    <%_ } -%>
+    <%_ if (contextStoreProvider === 'dynamodb') { -%>
+    .contextStore(new DynamoDBContextStore({
+      table: { name: <%- JSON.stringify(name) -%> },
+      AWSConfigJSON: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        region: process.env.AWS_REGION
+      },
+      autoCreate: true
+    }))
     <%_ } -%>
     <%_ if (generateSmartAppFeatures && smartAppDisableCustomName) { -%>
     .disableCustomDisplayName(true)
@@ -36,30 +44,25 @@ const smartapp = new SmartApp()
     <%_ if (generateSmartAppFeatures && smartAppDisableRemoveApp) { -%>
     .disableRemoveApp(true)
     <%_ } -%>
-    <%_ if (generateSmartAppFeatures && smartAppConfigureI18n) { -%>
-    .configureI18n({
-      updateFiles: false,
-      locales: ['en'],
-      directory: path.join(__dirname, '/locales')
+    .page('mainPage', (context, page, _) => {
+      const lights = context.configDevices('lights')
+      page.section('sensors', section => {
+        section
+          .deviceSetting('contactSensor')
+          .capabilities(['contactSensor'])
+          .required(false)
+      })
+      page.section('lights', section => {
+        section.paragraphSetting(lights ? 'editLights' : 'addLights')
+
+        section
+          .deviceSetting('lights')
+          .capabilities(['switch'])
+          .multiple(true)
+          .permissions('rx')
+      })
     })
-    <%_ } -%>
-    .page('mainPage', (context, page, configData) => {
-        page.section('sensors', section => {
-            section
-                .deviceSetting('contactSensor')
-                .capabilities(['contactSensor'])
-                .required(false);
-        });
-        page.section('lights', section => {
-            section
-                .deviceSetting('lights')
-                .capabilities(['switch'])
-                .multiple(true)
-                .permissions('rx');
-        });
-    })
-    .updated(async (context, updateData) => {
-        // Called for both INSTALLED and UPDATED lifecycle events if there is no separate installed() handler
+    .updated(async (context, _) => {
         await context.api.subscriptions.unsubscribeAll()
         return context.api.subscriptions.subscribeToDevices(context.config.contactSensor, 'contactSensor', 'contact', 'myDeviceEventHandler');
     })
@@ -69,7 +72,7 @@ const smartapp = new SmartApp()
     });
 
 <% if (hostingProvider !== 'lambda') { -%>
-server.post('/', function(req, res, next) {
+server.post('/', function(req, res, _) {
   smartapp.handleHttpCallback(req, res);
 });
 

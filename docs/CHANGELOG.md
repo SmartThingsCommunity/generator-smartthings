@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.1.0...v1.2.0) (2019-08-02)
+
+
+### Features
+
+* add dynamodb, add app creation ([#22](https://github.com/SmartThingsCommunity/generator-smartthings/issues/22)) ([ca357f8](https://github.com/SmartThingsCommunity/generator-smartthings/commit/ca357f8))
+
 # [1.1.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.0.1...v1.1.0) (2019-08-01)
 
 

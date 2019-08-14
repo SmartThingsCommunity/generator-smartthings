@@ -4,10 +4,10 @@ const {default: chalk} = require('chalk')
 const yosay = require('yosay')
 const axios = require('axios').default
 const inquirer = require('inquirer')
-const Generator = require('../../lib/generator')
+const BaseGenerator = require('../../lib/generator')
 const validator = require('./validator')
 
-module.exports = class extends Generator {
+module.exports = class extends BaseGenerator {
 	constructor(args, opts) {
 		super(args, opts)
 
@@ -438,6 +438,30 @@ module.exports = class extends Generator {
 		return result
 	}
 
+	async configuring() {
+		this.sourceRoot(path.join(__dirname, './templates/', this.appConfig.type))
+
+		// Available types: 'smartapp', 'c2c-smartapp', 'c2c-st-schema', 'api-only'
+		switch (this.appConfig.type) {
+			case 'app-smartapp':
+				if (this.appConfig.smartThingsPat) {
+					const success = await this._createAppRecord('AUTOMATION')
+					if (!success) {
+						this.log(yosay('An error occurred when creating your SmartThings app. Try again.'))
+						this.abort = true
+					}
+				}
+
+				break
+			case 'app-c2c-smartapp':
+			case 'app-c2c-st-schema':
+			case 'app-api-only':
+			default:
+				// Unknown project type
+				break
+		}
+	}
+
 	async writing() {
 		this.sourceRoot(path.join(__dirname, './templates/', this.appConfig.type))
 
@@ -471,12 +495,12 @@ module.exports = class extends Generator {
 		try {
 			const {data: app} = await axios.get(`/apps/${this.appConfig.name}`)
 			if (app) {
-				this.log('Try again with a new app name')
+				this.log(chalk.redBright('Try again with a different, unique app name'))
 				return false
 			}
 		} catch (error) {
 			if (error.response.status === 403) {
-				this.log('App by this name is not found, will create a new one.')
+				this.log(chalk.blueBright('Creating a new SmartThings project for you'))
 			}
 		}
 

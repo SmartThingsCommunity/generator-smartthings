@@ -7,7 +7,8 @@ const Generator = require('yeoman-generator')
 module.exports = class extends Generator {
 	async prompting() {
 		const generatorPkg = this.fs.readJSON(path.join(__dirname, '../..', 'package.json'))
-		this.log(yosay(`Welcome to the ${chalk.hex('#15bfff').bold.underline('SmartThings')} app generator! v${generatorPkg.version}`))
+		const debug = process.env.NODE_ENV === 'development'
+		this.log(yosay(`Welcome to the ${debug ? 'dev-' : ''}${chalk.hex('#15bfff').bold.underline('SmartThings')} app generator! v${generatorPkg.version}`))
 
 		this.answers = await this.prompt([{
 			type: 'list',

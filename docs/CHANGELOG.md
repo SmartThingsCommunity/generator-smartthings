@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.1...v1.2.2) (2019-08-14)
+
+
+### Bug Fixes
+
+* use composeWith() instead of run() ([#25](https://github.com/SmartThingsCommunity/generator-smartthings/issues/25)) ([4a1c1aa](https://github.com/SmartThingsCommunity/generator-smartthings/commit/4a1c1aa))
+
 ## [1.2.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.0...v1.2.1) (2019-08-14)
 
 

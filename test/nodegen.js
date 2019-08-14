@@ -1,4 +1,4 @@
-/* eslint-disable no-undef, space-before-function-paren */
+/* eslint-disable no-undef, no-unused-expressions, space-before-function-paren */
 'use strict'
 const path = require('path')
 const fs = require('fs')
@@ -80,6 +80,36 @@ describe('generator-smartthings:node', function() {
 				} catch (error) {
 					done(error)
 				}
+			})
+	})
+
+	it('smartapp with invalid pat aborts', done => {
+		this.timeout(20000)
+		helpers
+			.run(path.join(__dirname, '../generators/node'))
+			.withPrompts({
+				type: 'app-smartapp',
+				displayName: 'My Test App',
+				name: 'my-test-app',
+				description: 'My test app description',
+				smartThingsPat: 'bad-pat',
+				smartAppPermissions: ['r:devices:*', 'x:devices:*'],
+				generateSmartAppFeatures: false,
+				hostingProvider: 'express',
+				contextStoreProvider: 'dynamodb',
+				awsAccessKeyId: 'bad-access-key',
+				awsSecretAccessKey: 'bad-secret-access-key',
+				awsRegion: 'us-east-2',
+				checkJavaScript: true,
+				linter: 'xo',
+				tester: 'mocha',
+				gitInit: false,
+				pkgManager: 'npm',
+				installDependencies: false
+			}).toPromise().then(() => {
+				const pkgExists = fs.existsSync('package.json')
+				expect(pkgExists).to.not.be.true
+				done()
 			})
 	})
 

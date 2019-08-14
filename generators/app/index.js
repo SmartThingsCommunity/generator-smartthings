@@ -25,7 +25,7 @@ module.exports = class extends Generator {
 	}
 
 	async end() {
-		this.env.run(`smartthings:${this.answers.language}`, {
+		this.composeWith(require.resolve(`../${this.answers.language}`), {
 			skipWelcome: true
 		})
 	}

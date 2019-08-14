@@ -7,11 +7,11 @@ const {default: chalk} = require('chalk')
 const yosay = require('yosay')
 const inquirer = require('inquirer')
 
-const Generator = require('yeoman-generator')
+const BaseGenerator = require('../../lib/generator')
 
 const readdir = util.promisify(fs.readdir)
 
-module.exports = class extends Generator {
+module.exports = class extends BaseGenerator {
 	constructor(args, opts) {
 		super(args, opts)
 

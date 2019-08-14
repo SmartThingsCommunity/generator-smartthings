@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.0...v1.2.1) (2019-08-14)
+
+
+### Bug Fixes
+
+* npm init yo broken by not inheriting from base generator ([#24](https://github.com/SmartThingsCommunity/generator-smartthings/issues/24)) ([9222b8d](https://github.com/SmartThingsCommunity/generator-smartthings/commit/9222b8d))
+
 # [1.2.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.1.0...v1.2.0) (2019-08-02)
 
 

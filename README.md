@@ -16,6 +16,12 @@
 If you have NPM install (`5.2.0`+), just run the following command from a root repository directory:
 
 ```bash
+npx yo smartthings
+```
+
+or,
+
+```bash
 npm init yo smartthings
 ```
 
@@ -36,12 +42,34 @@ Then generate your new project:
 yo smartthings
 ```
 
+## Developing
+
+### Debugging guide
+
+* From the source directory:
+
+```bash
+npm link
+```
+
+* From anywhere:
+
+```bash
+node --inspect `which yo` smartthings
+```
+
+* For additional debug logging from Yeoman itself:
+
+```bash
+DEBUG=yeoman:generator node --inspect `which yo` smartthings
+```
+
 ## Getting To Know Yeoman
 
-- Yeoman has a heart of gold.
-- Yeoman is a person with feelings and opinions, but is very easy to work with.
-- Yeoman can be too opinionated at times but is easily convinced not to be.
-- Feel free to [learn more about Yeoman](http://yeoman.io/).
+* Yeoman has a heart of gold.
+* Yeoman is a person with feelings and opinions, but is very easy to work with.
+* Yeoman can be too opinionated at times but is easily convinced not to be.
+* Feel free to [learn more about Yeoman](http://yeoman.io/).
 
 ## More about SmartThings
 

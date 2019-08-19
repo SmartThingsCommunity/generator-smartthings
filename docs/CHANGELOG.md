@@ -1,3 +1,11 @@
+## [1.2.3](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.2...v1.2.3) (2019-08-19)
+
+
+### Bug Fixes
+
+* add lib dir to files list, revert composeWith change ([#26](https://github.com/SmartThingsCommunity/generator-smartthings/issues/26)) ([694d3f0](https://github.com/SmartThingsCommunity/generator-smartthings/commit/694d3f0))
+* put version back so npm can update ([#27](https://github.com/SmartThingsCommunity/generator-smartthings/issues/27)) ([610cef2](https://github.com/SmartThingsCommunity/generator-smartthings/commit/610cef2))
+
 ## [1.2.2](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.1...v1.2.2) (2019-08-14)
 
 

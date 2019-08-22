@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.3...v1.3.0) (2019-08-22)
+
+
+### Features
+
+* implement ST-Schema integration ([#28](https://github.com/SmartThingsCommunity/generator-smartthings/issues/28)) ([5d1ad20](https://github.com/SmartThingsCommunity/generator-smartthings/commit/5d1ad20))
+
 ## [1.2.3](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.2...v1.2.3) (2019-08-19)
 
 

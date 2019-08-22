@@ -6,6 +6,7 @@ const axios = require('axios').default
 const inquirer = require('inquirer')
 const BaseGenerator = require('../../lib/generator')
 const validator = require('./validator')
+const filter = require('./filter')
 
 module.exports = class extends BaseGenerator {
 	constructor(args, opts) {
@@ -31,6 +32,8 @@ module.exports = class extends BaseGenerator {
 			'@smartthings/smartapp',
 			'express'
 		]
+
+		this._filter = filter(this)
 	}
 
 	prompting() {
@@ -69,8 +72,7 @@ module.exports = class extends BaseGenerator {
 						disabled: 'coming soon'
 					}, {
 						name: chalk.white.bold('ST Schema') + '\tCloud Device Integration ' + chalk.italic('\n\t\tFor clouds that support OAuth 2.0'),
-						value: 'app-c2c-st-schema',
-						disabled: 'coming soon'
+						value: 'app-c2c-st-schema'
 					}]
 				}).then(typeAnswer => {
 					generator.appConfig.type = typeAnswer.type
@@ -81,6 +83,9 @@ module.exports = class extends BaseGenerator {
 			askForPat: () => {
 				const suffix = chalk.dim.italic(' Get an ') + chalk.dim.bold.italic('Application') + chalk.dim.italic(' scope token from https://account.smartthings.com/tokens')
 				return generator.prompt({
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema']
+					}),
 					type: 'input',
 					name: 'smartThingsPat',
 					message: chalk.hex('#15bfff').bold.underline('Enter a SmartThings personal access token'),
@@ -159,6 +164,9 @@ module.exports = class extends BaseGenerator {
 			// Ask to build app permissions based on what's available in workspace
 			askForSmartAppPermissions: () => {
 				return generator.prompt({
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema']
+					}),
 					type: 'checkbox',
 					name: 'smartAppPermissions',
 					pageSize: 5,
@@ -178,6 +186,9 @@ module.exports = class extends BaseGenerator {
 			// Ask to generate smartapp features
 			askForAppFeatures: () => {
 				return generator.prompt({
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema']
+					}),
 					type: 'confirm',
 					name: 'generateSmartAppFeatures',
 					message: chalk.hex('#15bfff').bold.underline('Do you want to generate any app features?')
@@ -191,7 +202,10 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'confirm',
 					name: 'smartAppDisableCustomName',
-					when: this.appConfig.generateSmartAppFeatures,
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema'],
+						generateSmartAppFeatures: true
+					}),
 					default: true,
 					message: chalk.hex('#15bfff').bold.underline('Prevent users from renaming your app?')
 				}).then(answer => {
@@ -204,7 +218,10 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'confirm',
 					name: 'smartAppDisableRemoveApp',
-					when: this.appConfig.generateSmartAppFeatures,
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema'],
+						generateSmartAppFeatures: true
+					}),
 					default: true,
 					message: chalk.hex('#15bfff').bold.underline('Prevent users from removing the app during configuration?')
 				}).then(answer => {
@@ -217,7 +234,10 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'confirm',
 					name: 'smartAppConfigureI18n',
-					when: this.appConfig.generateSmartAppFeatures,
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema'],
+						generateSmartAppFeatures: true
+					}),
 					default: true,
 					message: chalk.hex('#15bfff').bold.underline('Configure language localization?'),
 					suffix: chalk.dim.italic(' (i18n)')
@@ -231,6 +251,9 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'list',
 					name: 'hostingProvider',
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema']
+					}),
 					message: chalk.hex('#15bfff').bold.underline('How are you hosting your app?'),
 					default: 'express',
 					choices: [
@@ -246,8 +269,11 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'input',
 					name: 'webhookTargetUrl',
-					message: chalk.hex('#15bfff').bold.underline('What is your webhook\'s public-DNS target URL?'),
-					when: this.appConfig.hostingProvider !== 'lambda'
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema'],
+						hostingProvider: {notIn: ['lambda']}
+					}),
+					message: chalk.hex('#15bfff').bold.underline('What is your webhook\'s public-DNS target URL?')
 				}).then(webhookTargetUrlAnswer => {
 					generator.appConfig.webhookTargetUrl = webhookTargetUrlAnswer.webhookTargetUrl
 				})
@@ -258,10 +284,13 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'input',
 					name: 'lambdaArn',
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema'],
+						hostingProvider: {in: ['lambda']}
+					}),
 					message: chalk.hex('#15bfff').bold.underline('What are your AWS Lambda function ARN(s)'),
 					prefix: '(optional)',
-					suffix: chalk.dim.italic(' space or comma delimited'),
-					when: this.appConfig.hostingProvider === 'lambda'
+					suffix: chalk.dim.italic(' space or comma delimited')
 				}).then(lambdaArnAnswer => {
 					generator.appConfig.lambdaArn = lambdaArnAnswer.lambdaArn
 				})
@@ -274,7 +303,9 @@ module.exports = class extends BaseGenerator {
 					name: 'contextStoreProvider',
 					message: chalk.hex('#15bfff').bold.underline('What is your context store provider?'),
 					suffix: chalk.italic(' Allows the SDK to manage user access/refresh tokens'),
-					when: ['app-smartapp', 'app-c2c-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1,
+					when: generator._filter({
+						typeIn: ['app-smartapp', 'app-c2c-smartapp', 'app-api-only']
+					}),
 					default: 'dynamodb',
 					choices: [
 						{name: 'AWS DynamoDB', value: 'dynamodb'},
@@ -292,7 +323,10 @@ module.exports = class extends BaseGenerator {
 					name: 'awsAccessKeyId',
 					message: chalk.hex('#15bfff').bold.underline('What is your AWS access key Id?'),
 					suffix: chalk.italic(' (DynamoDB)'),
-					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 && generator.appConfig.contextStoreProvider === 'dynamodb')
+					when: generator._filter({
+						typeIn: ['app-smartapp', 'app-api-only'],
+						contextStoreProvider: {in: ['dynamodb']}
+					})
 				}).then(awsAccessKeyIdAnswer => {
 					generator.appConfig.awsAccessKeyId = awsAccessKeyIdAnswer.awsAccessKeyId
 				})
@@ -304,9 +338,11 @@ module.exports = class extends BaseGenerator {
 					name: 'awsSecretAccessKey',
 					message: chalk.hex('#15bfff').bold.underline('What is your AWS secret access key?'),
 					suffix: chalk.italic(' (DynamoDB)'),
-					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 &&
-          generator.appConfig.contextStoreProvider === 'dynamodb' &&
-          generator.appConfig.awsAccessKeyId)
+					when: generator._filter({
+						typeIn: ['app-smartapp', 'app-api-only'],
+						contextStoreProvider: {in: ['dynamodb']},
+						awsAccessKeyId: true
+					})
 				}).then(awsSecretAccessKeyAnswer => {
 					generator.appConfig.awsSecretAccessKey = awsSecretAccessKeyAnswer.awsSecretAccessKey
 				})
@@ -319,10 +355,12 @@ module.exports = class extends BaseGenerator {
 					message: chalk.hex('#15bfff').bold.underline('What is your AWS region?'),
 					suffix: chalk.italic(' (DynamoDB)'),
 					default: 'us-east-1',
-					when: (['app-smartapp', 'app-api-only'].indexOf(generator.appConfig.type) !== -1 &&
-          generator.appConfig.contextStoreProvider === 'dynamodb' &&
-          generator.appConfig.awsAccessKeyId &&
-          generator.appConfig.awsSecretAccessKey)
+					when: generator._filter({
+						typeIn: ['app-smartapp', 'app-api-only'],
+						contextStoreProvider: {in: ['dynamodb']},
+						awsAccessKeyId: true,
+						awsSecretAccessKey: true
+					})
 				}).then(awsRegionAnswer => {
 					generator.appConfig.awsRegion = awsRegionAnswer.awsRegion
 				})
@@ -339,6 +377,9 @@ module.exports = class extends BaseGenerator {
 				return generator.prompt({
 					type: 'confirm',
 					name: 'checkJavaScript',
+					when: generator._filter({
+						typeNotIn: ['app-c2c-st-schema']
+					}),
 					message: chalk.hex('#15bfff').bold.underline('Enable JavaScript type checking in \'jsconfig.json\'?'),
 					default: true
 				}).then(strictJavaScriptAnswer => {
@@ -480,11 +521,76 @@ module.exports = class extends BaseGenerator {
 				break
 			case 'app-c2c-smartapp':
 			case 'app-c2c-st-schema':
+				this._writingStSchemaTemplate()
+				break
 			case 'app-api-only':
 			default:
 				// Unknown project type
 				break
 		}
+	}
+
+	_writingStSchemaTemplate() {
+		if (this.abort) {
+			return
+		}
+
+		const context = this.appConfig
+		const path = context.name
+		this.fs.copyTpl(this.sourceRoot() + '/index.js', path + '/index.js', context)
+		this.fs.copyTpl(this.sourceRoot() + '/package.json', path + '/package.json', context)
+		this.fs.copyTpl(this.sourceRoot() + '/README.md', path + '/README.md', context)
+
+		const pkgJson = {
+			dependencies: {},
+			devDependencies: {},
+			scripts: {}
+		}
+
+		const extensionsJson = {recommendations: []}
+
+		switch (this.appConfig.tester) {
+			case 'mocha':
+				pkgJson.devDependencies.mocha = '^6.1.4'
+				pkgJson.devDependencies.chai = '^4.2.0'
+				break
+			default: break
+		}
+
+		if (this.appConfig.gitInit) {
+			extensionsJson.recommendations.push('codezombiech.gitignore')
+			this.fs.copyTpl(this.sourceRoot() + '/.gitignore', path + '/.gitignore', context)
+		}
+
+		switch (this.appConfig.linter) {
+			case 'xo':
+				extensionsJson.recommendations.push('samverschueren.linter-xo')
+				pkgJson.devDependencies.xo = '^0.24.0'
+				pkgJson.xo = {
+					semicolon: false,
+					space: 2,
+					rules: {
+						'no-unused-vars': 1,
+						'no-multi-assign': 1
+					}
+				}
+				pkgJson.scripts.lint = 'xo'
+				pkgJson.scripts['lint:fix'] = 'xo --fix'
+				break
+			case 'eslint':
+				extensionsJson.recommendations.push('dbaeumer.vscode-eslint')
+				pkgJson.devDependencies.eslint = '^5.16.0'
+				pkgJson.devDependencies['eslint-config-strongloop'] = '^2.1.0'
+				pkgJson.scripts.lint = 'eslint --ignore-path .gitignore .'
+				pkgJson.scripts['lint:fix'] = 'eslint --fix --ignore-path .gitignore .'
+				this.fs.copyTpl(this.sourceRoot() + '/.eslintrc.json', context.name + '/.eslintrc.json', context)
+				break
+			default: break
+		}
+
+		this.fs.extendJSON(this.destinationPath(context.name + '/package.json'), pkgJson)
+
+		this.appConfig.installDependencies = true
 	}
 
 	async _createAppRecord(classifications) {

@@ -130,4 +130,122 @@ describe('generator-smartthings:node', function() {
 		expect(validator.validateNotEmpty()).to.equal(false)
 		expect(validator.validateNotEmpty(undefined)).to.equal(false)
 	})
+
+	it('app-c2c-st-schema', done => {
+		this.timeout(20000)
+		helpers
+			.run(path.join(__dirname, '../generators/node'))
+			.withPrompts({
+				type: 'app-c2c-st-schema',
+				displayName: 'My Test ST Schema App',
+				name: 'my-test-st-schema-app',
+				description: 'My test st-schema app description',
+				checkJavaScript: true,
+				linter: 'xo',
+				tester: 'mocha',
+				gitInit: false,
+				pkgManager: 'npm'
+			}).toPromise().then(() => {
+				const expected = {
+					name: 'my-test-st-schema-app',
+					displayName: 'My Test ST Schema App',
+					description: 'My test st-schema app description',
+					version: '0.0.1',
+					main: './index.js',
+					scripts: {
+						'lint': 'xo',
+						'lint:fix': 'xo --fix'
+					},
+					dependencies: {
+					},
+					devDependencies: {
+						'mocha': '^6.1.4',
+						'chai': '^4.2.0',
+						'xo': '^0.24.0'
+					},
+					xo: {
+						'semicolon': false,
+						'space': 2,
+						'rules': {
+							'no-unused-vars': 1,
+							'no-multi-assign': 1
+						}
+					}
+				}
+				try {
+					assert.file([
+						'README.md',
+						'package.json',
+						'index.js'
+					])
+
+					const body = fs.readFileSync('package.json', 'utf8')
+					const actual = JSON.parse(body)
+					assert.deepEqual(expected, actual)
+					done()
+				} catch (error) {
+					done(error)
+				}
+			})
+	})
+
+	it('filter test', done => {
+		const filter = require('../generators/node/filter')({
+			appConfig: {
+				installDependencies: false,
+				type: 'app-smartapp',
+				smartThingsPat: '',
+				displayName: 'test app',
+				name: 'test-app',
+				description: 'Description of test-app'
+			}
+		})
+		try {
+			let result = filter({
+				typeIn: ['app-smartapp']
+			})
+
+			assert(result)
+
+			result = filter({
+				typeNotIn: ['app-smartapp']
+			})
+
+			assert(!result)
+
+			result = filter({
+				displayName: true
+			})
+
+			assert(result)
+
+			result = filter({
+				smartThingsPat: true
+			})
+
+			assert(!result)
+
+			result = filter({
+				smartThingsPat: false
+			})
+
+			assert(result)
+
+			result = filter({
+				type: {in: ['app-smartapp']}
+			})
+
+			assert(result)
+
+			result = filter({
+				type: {notIn: ['app-smartapp']}
+			})
+
+			assert(!result)
+
+			done()
+		} catch (error) {
+			done(error)
+		}
+	})
 })

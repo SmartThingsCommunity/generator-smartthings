@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.3.0...v1.3.1) (2019-09-24)
+
+
+### Bug Fixes
+
+* don't use hidden file for .gitignore in template ([#31](https://github.com/SmartThingsCommunity/generator-smartthings/issues/31)) ([e942ca1](https://github.com/SmartThingsCommunity/generator-smartthings/commit/e942ca1))
+
 # [1.3.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.2.3...v1.3.0) (2019-08-22)
 
 

@@ -589,7 +589,6 @@ module.exports = class extends BaseGenerator {
 		if (this.appConfig.gitInit) {
 			extensionsJson.recommendations.push('codezombiech.gitignore')
 			this.fs.copyTpl(this.sourceRoot() + '/gitignore', path + '/.gitignore', context)
-
 		}
 
 		switch (this.appConfig.linter) {

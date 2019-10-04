@@ -1,0 +1,5 @@
+{
+  "partnerEndpoint":"partner API endpoint",
+  "connectorClientId":"Get from Devworkspace st-schema connector",
+  "connectorClientSecret":"Get from Devworkspace st-schema connector"
+}

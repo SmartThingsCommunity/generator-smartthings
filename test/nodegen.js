@@ -144,6 +144,7 @@ describe('generator-smartthings:node', function() {
 				linter: 'xo',
 				tester: 'mocha',
 				gitInit: false,
+				stSchemaTemplate: 'c2c-switch-sample',
 				pkgManager: 'npm'
 			}).toPromise().then(() => {
 				const expected = {
@@ -151,12 +152,15 @@ describe('generator-smartthings:node', function() {
 					displayName: 'My Test ST Schema App',
 					description: 'My test st-schema app description',
 					version: '0.0.1',
-					main: './index.js',
+					main: './app.js',
 					scripts: {
 						'lint': 'xo',
 						'lint:fix': 'xo --fix'
 					},
 					dependencies: {
+						'body-parser': '^1.19.0',
+						'express': '^4.17.1',
+						'request': '^2.88.0'
 					},
 					devDependencies: {
 						'mocha': '^6.1.4',
@@ -176,7 +180,14 @@ describe('generator-smartthings:node', function() {
 					assert.file([
 						'README.md',
 						'package.json',
-						'index.js'
+						'app.js',
+						'command-handler.js',
+						'config.json',
+						'discovery-handler.js',
+						'grant-callback-access-handler.js',
+						'handler.js',
+						'integration-deleted-handler.js',
+						'state-refresh-handler.js'
 					])
 
 					const body = fs.readFileSync('package.json', 'utf8')

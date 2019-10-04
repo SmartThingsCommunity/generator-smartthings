@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.3.1...v1.4.0) (2019-10-04)
+
+
+### Features
+
+* add c2c switch sample ([#30](https://github.com/SmartThingsCommunity/generator-smartthings/issues/30)) ([eb817db](https://github.com/SmartThingsCommunity/generator-smartthings/commit/eb817db))
+
 ## [1.3.1](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.3.0...v1.3.1) (2019-09-24)
 
 

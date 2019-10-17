@@ -4,6 +4,7 @@ const discoveryRequestHandler = require('./discovery-handler')
 const stateRefreshRequestHandler = require('./state-refresh-handler')
 const commandRequestHandler = require('./command-handler')
 const integrationDeletedHandler = require('./integration-deleted-handler')
+// const grantCallbackAccessHandler = require('./grant-callback-access-handler')
 
 const grantCallbackAccessHandler = {
   handle: event => {

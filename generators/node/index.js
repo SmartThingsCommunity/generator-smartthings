@@ -96,6 +96,24 @@ module.exports = class extends BaseGenerator {
 			},
 
 			// Ask for st-schema template
+			askForSelectHostingType: () => {
+				return generator.prompt({
+					type: 'list',
+					name: 'selectHostingType',
+					when: generator._filter({
+						typeIn: ['app-c2c-st-schema']
+					}),
+					message: chalk.hex('#15bfff').bold.underline('Select a connector hosting type'),
+					choices: [{name: chalk.white.bold('Lambda'),
+						value: 'c2c-st-lambda'
+					}, {name: chalk.white.bold('Webhook'),
+						value: 'c2c-st-webhook'
+					}]
+				}).then(selectHostingTypeAnswer => {
+					generator.appConfig.selectHostingType = selectHostingTypeAnswer.selectHostingType
+				})
+			},
+
 			askForStSchemaTemplate: () => {
 				return generator.prompt({
 					type: 'list',
@@ -554,27 +572,37 @@ module.exports = class extends BaseGenerator {
 
 		const context = this.appConfig
 		const path = context.name
-		this.fs.copyTpl(this.sourceRoot() + '/package.json', path + '/package.json', context)
+
 		this.fs.copyTpl(this.sourceRoot() + '/README.md', path + '/README.md', context)
-
-		this.fs.copyTpl(
-			this.templatePath(this.sourceRoot() + '/' + this.appConfig.stSchemaTemplate),
-			this.destinationPath('./' + path),
-			{title: 'Overwriting template'}
-		)
-
-		// If user select template
-		this.fs.copy(
-			this.templatePath(this.sourceRoot() + '/' + this.appConfig.stSchemaTemplate),
-			this.destinationPath('./' + path),
-			{title: 'Overwriting template'}
-		)
 
 		const pkgJson = {
 			dependencies: {},
 			devDependencies: {},
 			scripts: {}
 		}
+
+		switch (this.appConfig.selectHostingType) {
+			case 'c2c-st-lambda':
+				context.main = './index.js'
+				this.fs.copy(this.sourceRoot() + '/index.js', path + '/index.js')
+				break
+			case 'c2c-st-webhook':
+				context.main = './app.js'
+				this.fs.copy(this.sourceRoot() + '/app.js', path + '/app.js')
+				this.fs.copy(this.sourceRoot() + '/handler.js', path + '/handler.js')
+				pkgJson.dependencies.express = '^4.17.1'
+				pkgJson.dependencies['body-parser'] = '^1.19.0'
+				break
+			default: break
+		}
+
+		this.fs.copyTpl(this.sourceRoot() + '/package.json', path + '/package.json', context)
+
+		// If user select template
+		this.fs.copy(
+			this.templatePath(this.sourceRoot() + '/' + this.appConfig.stSchemaTemplate),
+			this.destinationPath('./' + path)
+		)
 
 		const extensionsJson = {recommendations: []}
 

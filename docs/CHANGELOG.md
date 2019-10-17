@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.4.0...v1.5.0) (2019-10-17)
+
+
+### Features
+
+* add st schema lambda template ([#32](https://github.com/SmartThingsCommunity/generator-smartthings/issues/32)) ([4e4a2a1](https://github.com/SmartThingsCommunity/generator-smartthings/commit/4e4a2a1))
+
 # [1.4.0](https://github.com/SmartThingsCommunity/generator-smartthings/compare/v1.3.1...v1.4.0) (2019-10-04)
 
 

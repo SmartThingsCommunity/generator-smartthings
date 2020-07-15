@@ -616,8 +616,9 @@ module.exports = class extends BaseGenerator {
 
 		if (this.appConfig.gitInit) {
 			extensionsJson.recommendations.push('codezombiech.gitignore')
-			this.fs.copyTpl(this.sourceRoot() + '/gitignore', path + '/.gitignore', context)
 		}
+
+		this.fs.copyTpl(this.sourceRoot() + '/gitignore', path + '/.gitignore', context)
 
 		switch (this.appConfig.linter) {
 			case 'xo':
@@ -719,9 +720,7 @@ module.exports = class extends BaseGenerator {
 			this.fs.copyTpl(this.sourceRoot() + '/.env', context.name + '/.env', context)
 		}
 
-		if (this.appConfig.gitInit) {
-			this.fs.copy(this.sourceRoot() + '/gitignore', context.name + '/.gitignore')
-		}
+		this.fs.copy(this.sourceRoot() + '/gitignore', context.name + '/.gitignore')
 
 		if (this.appConfig.checkJavaScript) {
 			this.fs.copyTpl(this.sourceRoot() + '/jsconfig.json', context.name + '/jsconfig.json', context)

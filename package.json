@@ -45,7 +45,7 @@
     "semantic-release": "semantic-release -e ./config/release.config.js"
   },
   "dependencies": {
-    "axios": "0.19.0",
+    "axios": "0.21.1",
     "chalk": "^2.4.2",
     "inquirer": "^6.5.0",
     "lodash": "^4.17.13",

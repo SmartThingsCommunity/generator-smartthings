@@ -1,3 +1,6 @@
+# Archived
+This project is no longer being maintained.
+
 # generator-smartthings
 
 <p align="center">
